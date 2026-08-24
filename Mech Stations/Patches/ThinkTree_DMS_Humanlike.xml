@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- ==================================================================== -->
+  <!-- DEAD MAN'S SWITCH - ThinkTreeDef "DMS_HumanlikeMech"                 -->
+  <!--                                                                      -->
+  <!-- The humanoid automatroids. The TREE belongs to the DMS core, but the  -->
+  <!-- mechs using it become obtainable through add-ons:                     -->
+  <!--   - The Dead Man's Switch - Synthetic                                 -->
+  <!--       Lady, Maiden, Big Sister, Armiman                               -->
+  <!--   - The Dead Man's Switch - Shroud Zone Special Force                 -->
+  <!--       Avatar, Mother                                                  -->
+  <!--   - The Dead Man's Switch - More Synthetics                          -->
+  <!--       Facedancer, hirsch                                             -->
+  <!-- Without those add-ons none of them has a recipe, and the tree needs   -->
+  <!-- no patch at all.                                                     -->
+  <!--                                                                      -->
+  <!-- ONE FILE PER TREE, not per mod - even though three mods are served    -->
+  <!-- here. Two files patching the same tree would insert the docking       -->
+  <!-- branch TWICE; patches do not check whether their target already       -->
+  <!-- exists. The startup check groups by mod, which is the right unit for  -->
+  <!-- a reader; a patch file follows the tree, which is the right unit for  -->
+  <!-- the game.                                                            -->
+  <!--                                                                      -->
+  <!-- Structure verified against the decompiled 1.6 tree: vanilla's shape   -->
+  <!-- at all three insertion points.                                       -->
+  <!-- ==================================================================== -->
+
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <!-- MS_Docking work mode branch -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="DMS_HumanlikeMech"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalNotFormingCaravan"]
+            /subNodes
+        </xpath>
+        <order>Append</order>
+        <value>
+          <li Class="ThinkNode_ConditionalWorkMode" MayRequire="Ludeon.RimWorld.Biotech">
+            <workMode>MS_Docking</workMode>
+            <subNodes>
+              <li Class="JobGiver_SeekAllowedArea" />
+              <li Class="MechStations.MSJobGiver_DockingMode" />
+              <li Class="JobGiver_GetEnergy_Charger" />
+              <li Class="JobGiver_GetEnergy_SelfShutdown">
+                <forced>true</forced>
+              </li>
+            </subNodes>
+          </li>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <!-- Combat mech patrolling block -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="DMS_HumanlikeMech"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalNotFormingCaravan"]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalWorkMode"][workMode="Work"]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalWorkMech"][@invert="true" or invert="true"]
+            /subNodes
+            /li[@Class="ThinkNode_Tagger"]
+            /subNodes
+        </xpath>
+        <order>Prepend</order>
+        <value>
+          <li Class="MechStations.MSJobGiver_DockingReturn"/>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <!-- Idle block -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="DMS_HumanlikeMech"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_Tagger"]
+            /subNodes
+        </xpath>
+        <order>Prepend</order>
+        <value>
+          <li Class="MechStations.MSJobGiver_DockingReturn"/>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+</Patch>

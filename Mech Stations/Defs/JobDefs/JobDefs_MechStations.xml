@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Charge session: the mech occupies the station until it reaches the
+       mechanitor's upper recharge threshold. Deliberately given NO expiry
+       interval by the code, so the think tree is not consulted while it runs
+       and work cannot pull the mech away - the same way vanilla protects a
+       mech at a charger. -->
+
+  <JobDef>
+    <defName>MS_DockingCharge</defName>
+    <driverClass>MechStations.MSJobDriver_DockingWait</driverClass>
+    <reportString>charging at station.</reportString>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <checkOverrideOnDamage>Always</checkOverrideOnDamage>
+  </JobDef>
+
+  <!-- Parking: the mech is already at or above the recharge target and simply
+       waits at its station. Short expiry, so work takes over immediately. -->
+
+  <JobDef>
+    <defName>MS_DockingWait</defName>
+    <driverClass>MechStations.MSJobDriver_DockingWait</driverClass>
+    <reportString>docking.</reportString>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <checkOverrideOnDamage>Always</checkOverrideOnDamage>
+  </JobDef>
+
+</Defs>

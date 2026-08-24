@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- ==================================================================== -->
+  <!-- VANILLA - ThinkTreeDef "Mechanoid"                                   -->
+  <!--                                                                      -->
+  <!-- One file per think tree, named after the mod that owns it. A mech     -->
+  <!-- whose tree is not patched here charges at vanilla rechargers but      -->
+  <!-- never walks to one of our ports on its own - the startup check in     -->
+  <!-- MSMechCompatibility lists exactly those and names the tree to add.    -->
+  <!--                                                                      -->
+  <!-- All three insertions follow the same shape in every tree:             -->
+  <!--   1. Idle block          -> DockingReturn (before WanderColony)       -->
+  <!--   2. Patrol block        -> DockingReturn (combat mechs)              -->
+  <!--   3. MS_Docking workmode -> the docking branch itself                 -->
+  <!-- ==================================================================== -->
+
+  <!--
+    Inserts JobGiver_DockReturn as the FIRST node inside the Idle block,
+    directly before JobGiver_WanderColony.
+    This means: only runs when mech is truly idle (after work, after combat).
+    The mech goes to dock instead of wandering aimlessly.
+  -->
+
+  <!-- Vanilla Mechanoid ThinkTree -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>
+      /Defs/ThinkTreeDef[defName="Mechanoid"]
+        /thinkRoot/subNodes
+        /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+        /subNodes
+        /li[@Class="ThinkNode_Tagger"]
+        /subNodes
+    </xpath>
+    <order>Prepend</order>
+    <value>
+      <li Class="MechStations.MSJobGiver_DockingReturn"/>
+    </value>
+  </Operation>
+
+  <!-- Vanilla: combat mech patrolling block (WorkMode=Work, invert=true) -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>
+      /Defs/ThinkTreeDef[defName="Mechanoid"]
+        /thinkRoot/subNodes
+        /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+        /subNodes
+        /li[@Class="ThinkNode_ConditionalNotFormingCaravan"]
+        /subNodes
+        /li[@Class="ThinkNode_ConditionalWorkMode"][workMode="Work"]
+        /subNodes
+        /li[@Class="ThinkNode_ConditionalWorkMech"][invert="true"]
+        /subNodes
+        /li[@Class="ThinkNode_Tagger"]
+        /subNodes
+    </xpath>
+    <order>Prepend</order>
+    <value>
+      <li Class="MechStations.MSJobGiver_DockingReturn"/>
+    </value>
+  </Operation>
+
+  <!--
+    MS_Docking work mode branch, modelled on vanilla's own Recharge branch.
+    Appended so it sits alongside the other work mode branches.
+  -->
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>
+      /Defs/ThinkTreeDef[defName="Mechanoid"]
+        /thinkRoot/subNodes
+        /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+        /subNodes
+        /li[@Class="ThinkNode_ConditionalNotFormingCaravan"]
+        /subNodes
+    </xpath>
+    <order>Append</order>
+    <value>
+      <li Class="ThinkNode_ConditionalWorkMode" MayRequire="Ludeon.RimWorld.Biotech">
+        <workMode>MS_Docking</workMode>
+        <subNodes>
+          <li Class="JobGiver_SeekAllowedArea" />
+          <!-- Go to a station - own one first, otherwise any free one - and hold it
+               once there, instead of stepping off at 100% the way vanilla Recharge
+               does. Applies to assigned and unassigned mechs alike. -->
+          <li Class="MechStations.MSJobGiver_DockingMode" />
+          <!-- Fallbacks copied from vanilla's Recharge branch, for mechs that find
+               no station at all: top up at any charger, then go dormant. -->
+          <li Class="JobGiver_GetEnergy_Charger" />
+          <li Class="JobGiver_GetEnergy_SelfShutdown">
+            <forced>true</forced>
+          </li>
+        </subNodes>
+      </li>
+    </value>
+  </Operation>
+
+</Patch>

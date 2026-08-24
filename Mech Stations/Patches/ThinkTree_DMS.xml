@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- ==================================================================== -->
+  <!-- DEAD MAN'S SWITCH - ThinkTreeDef "DMS_Mechanoid"                     -->
+  <!--                                                                      -->
+  <!-- Guarded by PatchOperationFindMod, so the whole block is skipped when  -->
+  <!-- DMS is absent. The other tree files use success=Always per operation  -->
+  <!-- instead - both work; this one predates that pattern.                  -->
+  <!--                                                                      -->
+  <!-- NOTE: DMS also ships DMS_HumanlikeMech, which we do NOT patch. No     -->
+  <!-- buildable mech used it as of 2026-08-23, so the startup check reports -->
+  <!-- nothing for it. Should that change, the check will name it.           -->
+  <!-- ==================================================================== -->
+
+  <!-- Dead Man's Switch (DMS) Mechanoid ThinkTree -->
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <li Class="PatchOperationFindMod">
+        <mods>
+          <li>Aoba.DeadManSwitch.Core</li>
+        </mods>
+      </li>
+      <!-- Idle block -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="DMS_Mechanoid"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_Tagger"]
+            /subNodes
+        </xpath>
+        <order>Prepend</order>
+        <value>
+          <li Class="MechStations.MSJobGiver_DockingReturn"/>
+        </value>
+      </li>
+      <!-- Combat mech patrolling block (WorkMode=Work, invert=true) -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="DMS_Mechanoid"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalNotFormingCaravan"]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalWorkMode"][workMode="Work"]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalWorkMech"][@invert="true" or invert="true"]
+            /subNodes
+            /li[@Class="ThinkNode_Tagger"]
+            /subNodes
+        </xpath>
+        <order>Prepend</order>
+        <value>
+          <li Class="MechStations.MSJobGiver_DockingReturn"/>
+        </value>
+      </li>
+      <!-- MS_Docking work mode branch -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="DMS_Mechanoid"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalNotFormingCaravan"]
+            /subNodes
+        </xpath>
+        <order>Append</order>
+        <value>
+          <li Class="ThinkNode_ConditionalWorkMode" MayRequire="Ludeon.RimWorld.Biotech">
+            <workMode>MS_Docking</workMode>
+            <subNodes>
+              <li Class="JobGiver_SeekAllowedArea" />
+              <!-- Go to a station - own one first, otherwise any free one - and hold it
+                   once there, instead of stepping off at 100% the way vanilla Recharge
+                   does. Applies to assigned and unassigned mechs alike. -->
+              <li Class="MechStations.MSJobGiver_DockingMode" />
+              <!-- Fallbacks copied from vanilla's Recharge branch, for mechs that find
+                   no station at all: top up at any charger, then go dormant. -->
+              <li Class="JobGiver_GetEnergy_Charger" />
+              <li Class="JobGiver_GetEnergy_SelfShutdown">
+                <forced>true</forced>
+              </li>
+            </subNodes>
+          </li>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+</Patch>

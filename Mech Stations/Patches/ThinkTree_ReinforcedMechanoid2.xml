@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- ==================================================================== -->
+  <!-- REINFORCED MECHANOID 2 (Continued) - ThinkTreeDef                    -->
+  <!-- "RM_Mechanoid_Sentinel"                                              -->
+  <!--                                                                      -->
+  <!-- Keeps vanilla's shape at all three insertion points; verified against -->
+  <!-- the decompiled tree before writing. Each operation sits in its OWN    -->
+  <!-- sequence with success=Always, so a future update that reshapes the    -->
+  <!-- tree costs only that one insertion instead of the whole file.         -->
+  <!-- ==================================================================== -->
+
+  <!-- Reinforced Mechanoid 2: RM_Mechanoid_Sentinel -->
+
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <!-- MS_Docking work mode branch. The important one - without it the
+           work mode exists but does nothing for these mechs. -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="RM_Mechanoid_Sentinel"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalNotFormingCaravan"]
+            /subNodes
+        </xpath>
+        <order>Append</order>
+        <value>
+          <li Class="ThinkNode_ConditionalWorkMode" MayRequire="Ludeon.RimWorld.Biotech">
+            <workMode>MS_Docking</workMode>
+            <subNodes>
+              <li Class="JobGiver_SeekAllowedArea" />
+              <li Class="MechStations.MSJobGiver_DockingMode" />
+              <li Class="JobGiver_GetEnergy_Charger" />
+              <li Class="JobGiver_GetEnergy_SelfShutdown">
+                <forced>true</forced>
+              </li>
+            </subNodes>
+          </li>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <!-- Combat mech patrolling block -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="RM_Mechanoid_Sentinel"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalNotFormingCaravan"]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalWorkMode"][workMode="Work"]
+            /subNodes
+            /li[@Class="ThinkNode_ConditionalWorkMech"][invert="true"]
+            /subNodes
+            /li[@Class="ThinkNode_Tagger"]
+            /subNodes
+        </xpath>
+        <order>Prepend</order>
+        <value>
+          <li Class="MechStations.MSJobGiver_DockingReturn"/>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <!-- Idle block -->
+      <li Class="PatchOperationAdd">
+        <xpath>
+          /Defs/ThinkTreeDef[defName="RM_Mechanoid_Sentinel"]
+            /thinkRoot/subNodes
+            /li[@Class="ThinkNode_ConditionalPlayerControlledMech"][not(invert) and not(@invert)]
+            /subNodes
+            /li[@Class="ThinkNode_Tagger"]
+            /subNodes
+        </xpath>
+        <order>Prepend</order>
+        <value>
+          <li Class="MechStations.MSJobGiver_DockingReturn"/>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+</Patch>

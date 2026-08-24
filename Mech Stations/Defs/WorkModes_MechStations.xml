@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!--
+    Own work mode, sitting alongside vanilla's Work / Escort / Recharge /
+    Dormant self-charge.
+
+    Why a separate mode instead of changing Recharge:
+
+    Vanilla's Recharge mode deliberately frees the charger again - a mech tops
+    up to 100%, steps off and goes dormant beside it, so the next mech in the
+    queue gets its turn. That is correct behaviour for a colony with fewer
+    chargers than mechs, and we do not want to take it away.
+
+    Docking is the opposite intent: the mech goes to its station and simply
+    stays there, awake, holding the spot. That only makes sense when stations
+    are assigned per mech, which is exactly what this mod adds.
+
+    Making it a mode rather than a mod setting means the player decides per
+    control group instead of globally - some groups can hold their stations
+    while others keep cycling through vanilla chargers.
+
+    The work mode picker reads DefDatabase.AllDefsListForReading and sorts by
+    uiOrder (verified via decompile), so this appears in the UI automatically
+    with no patch. uiOrder 350 places it between Recharge (300) and
+    Dormant self-charge (400).
+
+    ignoreGroupChargeLimits mirrors Recharge: the point of the order is "be
+    full", so the mechanitor's upper threshold is bypassed and the mech charges
+    to 100%.
+
+    SAVE NOTE: a control group stores its work mode as a def reference
+    (Scribe_Defs.Look). If this mod is removed while a group is set to Docking,
+    RimWorld clears the reference and logs a warning - the group then has no
+    work mode until the player picks one again. No data loss, no corruption,
+    but worth mentioning in the mod description.
+  -->
+
+  <MechWorkModeDef MayRequire="Ludeon.RimWorld.Biotech">
+    <defName>MS_Docking</defName>
+    <label>docking</label>
+    <uiOrder>350</uiOrder>
+    <description>Go to an assigned mech station, recharge fully and stay there. Unlike recharge, the mechanoid does not step off and go dormant once full - it holds its station until given another order.</description>
+    <iconPath>UI/Icons/WorkMode/MS_Docking</iconPath>
+    <ignoreGroupChargeLimits>true</ignoreGroupChargeLimits>
+  </MechWorkModeDef>
+
+</Defs>

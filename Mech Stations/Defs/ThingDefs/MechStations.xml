@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+<!-- ================================================================== -->
+<!-- PORTS - spots: the mech stands ON the building.                    -->
+<!--                                                                    -->
+<!-- Shared base holds everything the four ports have in common.        -->
+<!-- The variants differ only in size, weight classes, textures, cost   -->
+<!-- and (for the DMS ones) their mod requirement.                      -->
+<!-- ================================================================== -->
+
+  <ThingDef Name="MSPortBase" ParentName="BuildingBase" Abstract="True">
+
+    <thingClass>MechStations.MSBuilding_MechCharger</thingClass>
+    <category>Building</category>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>0</pathCost>
+    <fillPercent>0.1</fillPercent>
+    <rotatable>true</rotatable>
+    <defaultPlacingRot>South</defaultPlacingRot>
+    <selectable>true</selectable>
+    <useHitPoints>true</useHitPoints>
+    <designationCategory>Misc</designationCategory>
+    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+
+    <statBases>
+      <Flammability>0</Flammability>
+      <Beauty>-1</Beauty>
+    </statBases>
+
+    <building>
+      <ai_chillDestination>false</ai_chillDestination>
+      <destroySound>BuildingDestroyed_Metal_Small</destroySound>
+      <paintable>true</paintable>
+    </building>
+
+    <drawerType>MapMeshAndRealTime</drawerType>
+
+    <!-- Required because MSCompMechDocking uses CompTick. -->
+    <tickerType>Normal</tickerType>
+
+    <!-- ==================================================================== -->
+    <!-- Shared by all four ports. Single fields can be overridden per def;   -->
+    <!-- list entries would be APPENDED, not replaced. 			      -->
+    <!-- ==================================================================== -->
+    
+    <comps>
+      <li Class="MechStations.MSCompProperties_StatusLight"> <!-- Code default: 0.075, absolute. -->
+
+        <chargeStages>
+          <li>
+            <threshold>0</threshold>
+            <maskColor>(221, 94, 62)</maskColor>
+            <glowColor>(228, 66, 65)</glowColor>
+          </li>
+          <li>
+            <threshold>0.2</threshold>
+            <maskColor>(236, 217, 51)</maskColor>
+            <glowColor>(236, 217, 51)</glowColor>
+          </li>
+          <li>
+            <threshold>0.8</threshold>
+            <maskColor>(167, 200, 255)</maskColor>
+            <glowColor>(167, 200, 255)</glowColor>
+          </li>
+        </chargeStages>
+
+        <idleStage>
+          <maskColor>(245, 245, 245)</maskColor>
+          <glowColor>(245, 245, 245)</glowColor>
+        </idleStage>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+      <li Class="CompProperties_WasteProducer">
+        <!-- [!] false [!]: otherwise waste content line twice. -->
+        <showContentsInInspectPane>false</showContentsInInspectPane>
+      </li>
+    </comps>
+
+  </ThingDef>
+
+    <!-- ==================================================================== -->
+    <!--          MECHANOID & AUTOMATROID PORTS (2x SMALL, 2x LARGE)   	      -->
+    <!-- 		  Tag and List Documentation below:		      -->
+    <!-- ==================================================================== -->
+
+    <!--  "<hasInteractionCell>true</hasInteractionCell>"		      -->
+    <!--  Disfunctional but keeps the front side free: 			      -->
+    <!--  that caps the attachable sides and indicates the perspective.       -->
+
+    <!--  Offsets with Gizmo to compensate Mech offsets                       -->
+    <!--  "<li Class="MechStations.MSCompProperties_ExtraRenderer">"          -->
+    <!--    <positionPresets>						      -->
+    <!--      <li>(0, 0, 0)</li>					      -->
+    <!--      <li>(0, 0, -0.25)</li>					      -->
+    <!--      <li>(0, 0, -0.5)</li>					      -->
+    <!--    </positionPresets>						      -->
+
+    <!--  Layers: no <drawOffset> on any BASE graphic. Everything sits at     -->
+    <!--  plain 'Building' height like vanilla furniture, so overlap between  -->
+    <!--  buildings is decided by POSITION - the print tilt lets the          -->
+    <!--  southern one win, pixel by pixel. A base offset of 0.01 or more     -->
+    <!--  kills that and beats vanilla walls and beds wherever they stand.    -->
+    <!--                                                                      -->
+    <!--  A _top over its OWN base needs a minimal value: print order         -->
+    <!--  already sorts it, but at equal height the depth test can override   -->
+    <!--  and the top vanishes. A _top over a FOREIGN building - a module     -->
+    <!--  arm over its port - needs a large one: print order cannot reach     -->
+    <!--  across two things, and small values fail because a different        -->
+    <!--  drawSize tilts at a different steepness. Such a top beats           -->
+    <!--  southern furniture too, accepted for a raised part.                 -->
+
+    <!--  Defaults:                                                           -->
+    <!--  Port tops:.........0.001  (clears its own base only)                -->
+    <!--  Module tops:.......0.08   (drawn over all layers)                   -->
+    <!--  "Lights" (mask):...0.075  (Code)     			              -->
+    <!--  Waste Bar:.........0.10   (Code)				      -->
+    <!-- ==================================================================== -->
+
+  <!-- ============================= -->
+  <!-- =====> MECH PORT (1x1) <===== -->
+  <!-- ============================= -->
+
+  <ThingDef ParentName="MSPortBase">
+    <designationCategory>Biotech</designationCategory>
+    <defName>MS_MechPort_Small</defName>
+    <label>mechanoid port (small)</label>
+    <uiIconScale>0.75</uiIconScale>
+    <description>A compact docking spot for light and medium mechanoids. Assigned mechanoids will return to the port when idle or low on energy.</description>
+
+    <researchPrerequisites>
+      <li>BasicMechtech</li>
+    </researchPrerequisites>
+    
+    <size>(1,1)</size>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0, 0, 1)</interactionCellOffset>
+
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>30</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/MechPorts/MechPortSmall/MechPortS</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.1, 1.1)</drawSize>
+    </graphicData>
+
+    <comps>
+      
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>200</basePowerConsumption>
+        <idlePowerDraw>50</idlePowerDraw>
+      </li>
+
+      <li Class="CompProperties_Glower">
+        <glowRadius>1</glowRadius>
+        <glowColor>(0, 0, 0)</glowColor>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_MechDocking">
+        <attachableModules>
+          <li>MS_ChargeModule_Small</li>
+          <li>MS_RepairModule_Small</li>
+          <li>MS_WasteModule_Small</li>
+        </attachableModules>
+
+        <allowedWeightClasses>
+          <li>Light</li>
+          <li>Medium</li>
+        </allowedWeightClasses>
+
+      </li>
+
+      <li Class="CompProperties_ThingContainer">
+        <compClass>MechStations.MSCompThingContainer</compClass>
+        <stackLimit>5</stackLimit>
+        <drawContainedThing>false</drawContainedThing>
+        <dropEffecterDef>MechChargerWasteRemoved</dropEffecterDef>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ============================= -->
+  <!-- =====> MECH PORT (3x3) <===== -->
+  <!-- ============================= -->
+
+  <ThingDef ParentName="MSPortBase">
+    <designationCategory>Biotech</designationCategory>
+    <defName>MS_MechPort_Large</defName>
+    <label>mechanoid port (large)</label>
+    <uiIconScale>0.85</uiIconScale>
+    <description>A heavy docking platform for heavy and ultra-heavy mechanoids. Assigned mechanoids will return to the port when idle or low on energy.</description>
+
+    <researchPrerequisites>
+      <li>StandardMechtech</li>
+    </researchPrerequisites>
+    
+    <size>(3,3)</size>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0, 0, 2)</interactionCellOffset>
+
+    <statBases>
+      <MaxHitPoints>250</MaxHitPoints>
+      <WorkToBuild>900</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>90</Steel>
+      <ComponentIndustrial>3</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/MechPorts/MechPortLarge/MechPortL</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(4, 4)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>400</basePowerConsumption>
+        <idlePowerDraw>100</idlePowerDraw>
+      </li>
+
+      <li Class="CompProperties_Glower">
+        <glowRadius>3</glowRadius>
+        <glowColor>(0, 0, 0)</glowColor>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_MechDocking">
+        <attachableModules>
+	  <li>MS_WasteModule_Large</li>
+          <li>MS_ChargeModule_Large</li>
+          <li>MS_RepairModule_Large</li>
+        </attachableModules>
+
+        <allowedWeightClasses>
+          <li>Heavy</li>
+          <li>UltraHeavy</li>
+        </allowedWeightClasses>
+
+      </li>
+
+      <li Class="CompProperties_ThingContainer">
+        <compClass>MechStations.MSCompThingContainer</compClass>
+        <stackLimit>10</stackLimit>
+        <drawContainedThing>false</drawContainedThing>
+        <dropEffecterDef>MechChargerWasteRemoved</dropEffecterDef>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ============================= -->
+  <!-- =====> DMS PORT (1x1) <====== -->
+  <!-- ============================= -->
+
+  <ThingDef ParentName="MSPortBase" MayRequire="Aoba.DeadManSwitch.Core">
+    <designationCategory>DMS_Category</designationCategory>
+    <defName>MS_DMSPort_Small</defName>
+    <label>Automatroid Port (small)</label>
+    <uiIconScale>0.75</uiIconScale>
+    <description>A compact docking spot for light and medium automatroids. Assigned automatroids will return to the port when idle or low on energy.</description>
+
+    <researchPrerequisites>
+      <li>DMS_Automatroid</li>
+    </researchPrerequisites>
+    
+    <size>(1,1)</size>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0, 0, 1)</interactionCellOffset>
+
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>30</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/DMSPorts/DMSPortSmall/DMSPortS</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.1, 1.1)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>200</basePowerConsumption>
+        <idlePowerDraw>50</idlePowerDraw>
+      </li>
+
+      <li Class="CompProperties_Glower">
+        <glowRadius>1</glowRadius>
+        <glowColor>(0, 0, 0)</glowColor>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_MechDocking">
+        <attachableModules>
+          <li>MS_DMSChargeModule_Small</li>
+          <li>MS_DMSRepairModule_Small</li>
+          <li>MS_DMSWasteModule_Small</li>
+        </attachableModules>
+
+        <allowedWeightClasses>
+          <li>Light</li>
+          <li>Medium</li>
+        </allowedWeightClasses>
+
+      </li>
+
+      <li Class="CompProperties_ThingContainer">
+        <compClass>MechStations.MSCompThingContainer</compClass>
+        <stackLimit>5</stackLimit>
+        <drawContainedThing>false</drawContainedThing>
+        <dropEffecterDef>MechChargerWasteRemoved</dropEffecterDef>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ============================ -->
+  <!-- =====> DMS PORT (3x3) <===== -->
+  <!-- ============================ -->
+
+<ThingDef ParentName="MSPortBase" MayRequire="Aoba.DeadManSwitch.Core">
+    <designationCategory>DMS_Category</designationCategory>
+    <defName>MS_DMSPort_Large</defName>
+    <label>Automatroid Port (large)</label>
+    <uiIconPath>Things/Building/DMSPorts/DMSPortLarge/DMSPortL_icon</uiIconPath>
+    <uiIconScale>1</uiIconScale>
+    <description>A heavy docking platform for heavy and ultra-heavy automatroids. Assigned automatroids will return to the port when idle or low on energy.</description>
+
+    <researchPrerequisites>
+      <li>DMS_DeadMansSwitch</li>
+    </researchPrerequisites>
+
+    <size>(3,3)</size>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0, 0, 2)</interactionCellOffset>
+
+    <statBases>
+      <MaxHitPoints>250</MaxHitPoints>
+      <WorkToBuild>900</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>90</Steel>
+      <ComponentIndustrial>3</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/DMSPorts/DMSPortLarge/DMSPortL</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(4, 4)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>400</basePowerConsumption>
+        <idlePowerDraw>100</idlePowerDraw>
+      </li>
+
+      <li Class="CompProperties_Glower">
+        <glowRadius>3</glowRadius>
+        <glowColor>(0, 0, 0)</glowColor>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_MechDocking">
+        <attachableModules>
+          <li>MS_DMSChargeModule_Large</li>
+          <li>MS_DMSRepairModule_Large</li>
+          <li>MS_DMSWasteModule_Large</li>
+        </attachableModules>
+
+        <allowedWeightClasses>
+          <li>Heavy</li>
+          <li>UltraHeavy</li>
+        </allowedWeightClasses>
+
+      </li>
+
+      <li Class="CompProperties_ThingContainer">
+        <compClass>MechStations.MSCompThingContainer</compClass>
+        <stackLimit>10</stackLimit>
+        <drawContainedThing>false</drawContainedThing>
+        <dropEffecterDef>MechChargerWasteRemoved</dropEffecterDef>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+
+        <extraGraphics>
+          <li>
+            <texPath>Things/Building/DMSPorts/DMSPortLarge/DMSPortL_top</texPath>
+            <graphicClass>Graphic_Multi</graphicClass>
+            <shaderType>CutoutComplex</shaderType>
+            <drawSize>(4, 4)</drawSize>
+            <drawOffset>(0, 0.001, 0)</drawOffset>
+          </li>
+        </extraGraphics>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+</Defs>

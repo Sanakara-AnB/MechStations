@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- ==================================================================== -->
+  <!-- MECH CLASS OVERRIDES - PIKEMEN                                       -->
+  <!--                                                                      -->
+  <!-- Treats a mech as a different weight class ON OUR PORTS ONLY. Nothing  -->
+  <!-- global changes: RaceProps.mechWeightClass stays as it is, so vanilla  -->
+  <!-- rechargers, bandwidth and other mods see the original class.         -->
+  <!--                                                                      -->
+  <!-- Read by MSCompProperties_MechDocking.Accepts, the single place all    -->
+  <!-- three decision paths pass through.                                   -->
+  <!--                                                                      -->
+  <!-- Every pikeman lives here, vanilla and mod alike, because they share   -->
+  <!-- one reason: all four inherit Medium from BaseMechanoidWalker and all  -->
+  <!-- four draw at 2.4 - the same width as a Heavy mech, and far wider than -->
+  <!-- a scyther at 1.5. On a 1x1 port they cover the attached modules.      -->
+  <!--                                                                      -->
+  <!-- MayRequire keeps a mod entry out of the game when its mod is absent:  -->
+  <!-- without it the unresolvable <mech> reference would be a load error.   -->
+  <!-- optionLabelKey gives an entry its own checkbox in the mod options;    -->
+  <!-- the vanilla one has none and follows the main switch.                 -->
+  <!-- ==================================================================== -->
+
+  <MechStations.MSMechClassOverrideDef>
+    <defName>MS_ClassOverride_Pikeman</defName>
+    <mech>Mech_Pikeman</mech>
+    <treatAs>Heavy</treatAs>
+  </MechStations.MSMechClassOverrideDef>
+
+  <MechStations.MSMechClassOverrideDef MayRequire="qiuci.GD5.Expansion">
+    <defName>MS_ClassOverride_GrenadierPikeman</defName>
+    <mech>Mech_GrenadierPikeman</mech>
+    <treatAs>Heavy</treatAs>
+    <optionLabelKey>MS_ClassOverride_GD5Expansion</optionLabelKey>
+  </MechStations.MSMechClassOverrideDef>
+
+  <!-- Two entries, one checkbox each, but both labelled for the same mod.
+       That is deliberate: a player looking for "Diverse Mechanoid War
+       Procedure" in the options should find it, not two mech names. -->
+  <MechStations.MSMechClassOverrideDef MayRequire="AmethystTheOtter.DiverseMechanoidWarProcedure">
+    <defName>MS_ClassOverride_PikemanDefender</defName>
+    <mech>Mech_Pikeman_Defender</mech>
+    <treatAs>Heavy</treatAs>
+    <optionLabelKey>MS_ClassOverride_DMWP</optionLabelKey>
+  </MechStations.MSMechClassOverrideDef>
+
+  <MechStations.MSMechClassOverrideDef MayRequire="AmethystTheOtter.DiverseMechanoidWarProcedure">
+    <defName>MS_ClassOverride_PikemanCommander</defName>
+    <mech>Mech_Pikeman_Commander</mech>
+    <treatAs>Heavy</treatAs>
+    <optionLabelKey>MS_ClassOverride_DMWP</optionLabelKey>
+  </MechStations.MSMechClassOverrideDef>
+
+</Defs>

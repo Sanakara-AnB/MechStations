@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+
+    <name>Mech Stations</name>
+    <author>Sanakara</author>
+    <packageId>sanakara.mechstations</packageId>
+    
+    <supportedVersions>
+    	<li>1.6</li>
+    </supportedVersions>
+
+<description>
+&lt;color=#CC33FF&gt;~MECH STATIONS~&lt;/color&gt;
+Compact docking stations with module system for mechanoids.
+
+&lt;color=#00C1EA&gt;~FEATURES:~&lt;/color&gt;
+▸ Docking ports for every mechanoid size: the mech stands on the port itself, so nothing is parked in front of it taking up room.
+▸ Assign a mech to a port and it will return there when idle, instead of wandering around the colony.
+▸ Attachable modules for automated repair, faster charging and extended wastepack capacity.
+▸ A new Overseer mech-mode: &lt;color=#2ECC71&gt;~Docking~&lt;/color&gt;.
+▸ Docking works like Recharge, except the mech stays put. It charges to full at the nearest available port and holds it, whether the port is assigned to it or not.
+When no port is free, mechs fall back to vanilla recharger cycling.
+▸ Dead Man's Switch is supported. Mechanoids and automatroids can use each other's ports.
+
+&lt;color=#00C1EA&gt;~NOTICE:~&lt;/color&gt;
+▸ Size split: 1x1 ports take Light and Medium mechs, 3x3 ports take Heavy and Ultra-Heavy. Vanilla's small recharger only takes Light and the large recharger everything from Medium up.
+▸ A port with an assigned mech is reserved and will not be used by any other mech.
+▸ Assigned mechs return to their port whenever they are idle or low on energy.
+▸ Modules are built from the port, not from the build menu. Select a port and use the build buttons on it.
+▸ &lt;color=#E8871E&gt;Please note:&lt;/color&gt; Ports behave like ordinary rechargers, with one exception:
+A mech that runs out of energy and enters self-shutdown will not be carried to a port. It needs a vanilla recharger, or it has to sit in self-shutdown until it recharges itself to 15% (vanilla behaviour).
+
+&lt;color=#00C1EA&gt;~COMPATIBILITY:~&lt;/color&gt;
+▸ Mods that add new mech types should work, as long as those mechs use the vanilla (or DMS) mech system. Ports only check a mech's weight class, nothing else.
+▸ Mods that add or change rechargers should be fine too. Mech Stations does not replace vanilla's charging logic - it only redirects a mech to its own station.
+A mech with an assigned port always returns to it; an unassigned one compares distances and takes whichever is closer, so vanilla and modded rechargers keep working as before.
+</description>
+
+    <modDependencies>
+	<li>
+          <packageId>brrainz.harmony</packageId>
+          <displayName>Harmony</displayName>
+          <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+          <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+        </li>
+        <li>
+          <packageId>Ludeon.RimWorld.Biotech</packageId>
+          <displayName>Biotech</displayName>
+        </li>
+    </modDependencies>
+
+    <loadAfter>
+    </loadAfter>
+
+
+</ModMetaData>

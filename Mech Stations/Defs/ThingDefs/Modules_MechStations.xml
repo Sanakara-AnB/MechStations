@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+
+    <!-- ==================================================================== -->
+    <!-- STATION MODULES                                                      -->
+    <!--                                                                      -->
+    <!-- Shared base holds everything the modules have in common.             -->
+    <!-- Ownership is geometry, not links: The station's own front side is    -->
+    <!-- blocked by its (disfuntional) interaction cell, so at most three     -->
+    <!-- modules fit around a 3x3 port, with separate limitation by    	      -->  	     	     
+    <!-- <maxPerStation>.						      -->
+
+    <!-- Without <designationCategory>, placing Modules outside god mode      -->
+    <!-- throws in GenSpawn.WipeExistingThings (MissingRoot Red Error).	      -->
+    <!-- DMS modules override this in ther own Defs below.		      -->
+
+    <!--  Offsets with Gizmo to compensate Mech offsets                       -->
+    <!--  "<li Class="MechStations.MSCompProperties_ExtraRenderer">"          -->
+    <!--    <positionPresets>						      -->
+    <!--      <li>(0, 0, 0)</li>					      -->
+    <!--      <li>(0, 0, -0.25)</li>					      -->
+    <!--      <li>(0, 0, -0.5)</li>					      -->
+    <!--    </positionPresets>						      -->
+
+    <!--  Layers: no <drawOffset> on any BASE graphic. Everything sits at     -->
+    <!--  plain 'Building' height like vanilla furniture, so overlap between  -->
+    <!--  buildings is decided by POSITION - the print tilt lets the          -->
+    <!--  southern one win, pixel by pixel. A base offset of 0.01 or more     -->
+    <!--  kills that and beats vanilla walls and beds wherever they stand.    -->
+    <!--                                                                      -->
+    <!--  A _top over its OWN base needs a minimal value: print order         -->
+    <!--  already sorts it, but at equal height the depth test can override   -->
+    <!--  and the top vanishes. A _top over a FOREIGN building - a module     -->
+    <!--  arm over its port - needs a large one: print order cannot reach     -->
+    <!--  across two things, and small values fail because a different        -->
+    <!--  drawSize tilts at a different steepness. Such a top beats           -->
+    <!--  southern furniture too, accepted for a raised part.                 -->
+
+    <!--  Defaults:                                                           -->
+    <!--  Port tops:.........0.001  (clears its own base only)                -->
+    <!--  Module tops:.......0.08   (drawn over all layers)                   -->
+    <!--  "Lights" (mask):...0.075  (Code)     			              -->
+    <!--  Waste Bar:.........0.10   (Code)				      -->
+    <!-- ==================================================================== -->
+
+
+  <ThingDef Name="MSModuleBase" ParentName="BuildingBase" Abstract="True">
+
+    <thingClass>MechStations.MSBuilding_StationModule</thingClass>
+    <category>Building</category>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>0</pathCost>
+    <fillPercent>0.4</fillPercent>
+    <size>(3,1)</size>
+    <rotatable>true</rotatable>
+    <defaultPlacingRot>North</defaultPlacingRot>
+    <selectable>true</selectable>
+    <useHitPoints>true</useHitPoints>
+    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+
+    <designationCategory>Biotech</designationCategory>
+
+    <statBases>
+      <Flammability>0</Flammability>
+      <Beauty>-1</Beauty>
+      <MaxHitPoints>120</MaxHitPoints>
+      <WorkToBuild>500</WorkToBuild>
+    </statBases>
+
+    <building>
+      <ai_chillDestination>false</ai_chillDestination>
+      <destroySound>BuildingDestroyed_Metal_Small</destroySound>
+      <paintable>true</paintable>
+    </building>
+
+    <drawerType>MapMeshAndRealTime</drawerType>
+
+    <!-- Rare is a safety net, not a work cycle: the station pushes each module
+         its power state while scanning its ring. Nothing here needs Normal -
+         CompPowerTrader and CompFlickable have no tick method at all. -->
+    <tickerType>Rare</tickerType>
+
+    <placeWorkers>
+      <li>MechStations.MSPlaceWorker_ModuleAlignment</li>
+    </placeWorkers>
+
+    <comps>
+
+      <li Class="MechStations.MSCompProperties_StatusLight"></li>
+
+    </comps>
+
+  </ThingDef>
+
+    <!-- ===== NOTES =============================================================== -->
+    <!-- No <chargeStages> here: modules read state, thresholds and colors from      -->
+    <!-- their port. To give a module different MASK colors, add                     -->
+    <!-- <li Class="MechStations.MSCompProperties_LightOverride"> to its comps.      -->
+    <!-- State and colors come from the port this module faces. 		     -->
+    <!-- <suppressIdleMask> Turns off the texture light while idle. 		     -->
+    <!-- =========================================================================== -->
+
+
+  <!-- ================================================== -->
+  <!-- =====> MECH CHARGE ACCELERATOR MODULE (1x3) <===== -->
+  <!-- ================================================== -->
+
+  <ThingDef ParentName="MSModuleBase">
+    <defName>MS_ChargeModule_Large</defName>
+    <label>charge accelerator module</label>
+    <description>Attaches to a mech port and speeds up its charging. Several can be fitted to one port, but each costs additional power while the port is actually charging.</description>
+
+    <researchPrerequisites>
+      <li>StandardMechtech</li>
+    </researchPrerequisites>
+
+    <costList>
+      <Steel>60</Steel>
+      <ComponentIndustrial>2</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/MechModules/MechModulesL/MechAcceleratorL/MechAcceleratorL</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3.7, 3.7)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>150</basePowerConsumption>
+        <idlePowerDraw>10</idlePowerDraw>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_ChargeModule">
+        <chargeRateBonus>0.15</chargeRateBonus>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_LightOverride">
+        <suppressIdleMask>true</suppressIdleMask>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ================================================= -->
+  <!-- =====> DMS CHARGE ACCELERATOR MODULE (1x3) <===== -->
+  <!-- ================================================= -->
+
+  <ThingDef ParentName="MSModuleBase" MayRequire="Aoba.DeadManSwitch.Core">
+    <designationCategory>DMS_Category</designationCategory>
+    <defName>MS_DMSChargeModule_Large</defName>
+    <label>Charge Accelerator Module</label>
+    <description>Attaches to an automatroid port and speeds up its charging. Several can be fitted to one port, but each costs additional power while the port is actually charging.</description>
+
+    <researchPrerequisites>
+      <li>DMS_DeadMansSwitch</li>
+    </researchPrerequisites>
+
+    <costList>
+      <Steel>60</Steel>
+      <ComponentIndustrial>2</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/DMSModules/DMSModulesL/DMSAcceleratorL/DMSAcceleratorL</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(4, 4)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>150</basePowerConsumption>
+        <idlePowerDraw>10</idlePowerDraw>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_ChargeModule">
+        <chargeRateBonus>0.15</chargeRateBonus>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_LightOverride">
+        <suppressIdleMask>true</suppressIdleMask>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- =========================================== -->
+  <!-- =====> MECH AUTO-REPAIR MODULE (1x3) <===== -->
+  <!-- =========================================== -->
+
+  <ThingDef ParentName="MSModuleBase">
+    <defName>MS_RepairModule_Large</defName>
+    <label>auto-repair module</label>
+    <uiIconPath>Things/Building/MechModules/MechModulesL/MechRepairL/MechRepairL_icon</uiIconPath>
+    <uiIconScale>1.233</uiIconScale>
+    <description>Attaches to a mech port and slowly repairs a docked mechanoid without anyone tending to it. Far slower than hand repair by a mechanitor, and it costs power - but it needs no handling at all. Several can be fitted to one port.</description>
+
+    <researchPrerequisites>
+      <li>StandardMechtech</li>
+    </researchPrerequisites>
+
+    <costList>
+      <Steel>70</Steel>
+      <ComponentIndustrial>3</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/MechModules/MechModulesL/MechRepairL/MechRepairL</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3.7, 3.7)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>300</basePowerConsumption>
+        <idlePowerDraw>20</idlePowerDraw>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_RepairModule">
+        <repairRateFactor>0.30</repairRateFactor>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+
+        <extraGraphics>
+          <li>
+            <texPath>Things/Building/MechModules/MechModulesL/MechRepairL/MechRepairL_top</texPath>
+            <graphicClass>Graphic_Multi</graphicClass>
+            <shaderType>CutoutComplex</shaderType>
+            <drawSize>(2.5, 2.5)</drawSize>
+            <drawOffset>(0, 0.08, 0)</drawOffset>
+          </li>
+        </extraGraphics>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ========================================== -->
+  <!-- =====> DMS AUTO-REPAIR MODULE (1x3) <===== -->
+  <!-- ========================================== -->
+
+  <ThingDef ParentName="MSModuleBase" MayRequire="Aoba.DeadManSwitch.Core">
+    <designationCategory>DMS_Category</designationCategory>
+    <defName>MS_DMSRepairModule_Large</defName>
+    <label>Auto-Repair Module</label>
+    <uiIconPath>Things/Building/DMSModules/DMSModulesL/DMSRepairL/DMSRepairL_icon</uiIconPath>
+    <uiIconScale>1.333</uiIconScale>
+    <description>Attaches to an automatroid port and slowly repairs a docked Automatroid or Mechanoid without anyone tending to it. Far slower than hand repair by a mechanitor, and it costs power - but it needs no handling at all. Several can be fitted to one port.</description>
+
+    <researchPrerequisites>
+      <li>DMS_DeadMansSwitch</li>
+    </researchPrerequisites>
+
+    <costList>
+      <Steel>70</Steel>
+      <ComponentIndustrial>3</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/DMSModules/DMSModulesL/DMSRepairL/DMSRepairL</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(4, 4)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>300</basePowerConsumption>
+        <idlePowerDraw>20</idlePowerDraw>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_RepairModule">
+        <repairRateFactor>0.30</repairRateFactor>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+
+        <extraGraphics>
+          <li>
+            <texPath>Things/Building/DMSModules/DMSModulesL/DMSRepairL/DMSRepairL_top</texPath>
+            <graphicClass>Graphic_Multi</graphicClass>
+            <shaderType>CutoutComplex</shaderType>
+            <drawSize>(4, 4)</drawSize>
+            <drawOffset>(0, 0.08, 0)</drawOffset>
+          </li>
+        </extraGraphics>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- =============================================== -->
+  <!-- =====> MECH WASTE CONTAINER MODULE (1x3) <===== -->
+  <!-- =============================================== -->
+
+  <ThingDef ParentName="MSModuleBase">
+    <defName>MS_WasteModule_Large</defName>
+    <label>waste container module</label>
+    <description>Attaches to a large mech port and doubles its wastepack capacity, adding a fill indicator. Works without power. Only one can be fitted per port.</description>
+
+    <researchPrerequisites>
+      <li>StandardMechtech</li>
+    </researchPrerequisites>
+
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/MechModules/MechModulesL/MechWasteL/MechWasteL</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3.7, 3.7)</drawSize>
+    </graphicData>
+
+    <building>
+      <barDrawData> <!-- Waste Bar size and position -->
+        <north>
+          <size>(1.4, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0.025, -0.025)</preRotationOffset>
+        </north>
+        <east>
+          <size>(1.4, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0, 0)</preRotationOffset>
+        </east>
+        <south>
+          <size>(1.4, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(-0.025, 0.025)</preRotationOffset>
+        </south>
+        <west>
+          <size>(1.4, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0, 0)</preRotationOffset>
+        </west>
+      </barDrawData>
+    </building>
+
+    <comps>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_WasteContainer">
+        <maxPerStation>1</maxPerStation>
+        <capacityFactor>1.0</capacityFactor> <!-- +100% -->
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ============================================== -->
+  <!-- =====> DMS WASTE CONTAINER MODULE (1x3) <===== -->
+  <!-- ============================================== -->
+
+  <ThingDef ParentName="MSModuleBase" MayRequire="Aoba.DeadManSwitch.Core">
+    <designationCategory>DMS_Category</designationCategory>
+    <defName>MS_DMSWasteModule_Large</defName>
+    <label>Waste Container Module</label>
+    <description>Attaches to a large mech port and doubles its wastepack capacity, adding a fill indicator. Works without power. Only one can be fitted per port.</description>
+
+    <researchPrerequisites>
+      <li>DMS_DeadMansSwitch</li>
+    </researchPrerequisites>
+
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/DMSModules/DMSModulesL/DMSWasteL/DMSWasteL</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(4, 4)</drawSize>
+    </graphicData>
+
+    <building>
+      <barDrawData> <!-- Waste Bar size and position -->
+        <north>
+          <size>(1.2, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0, 0.3625)</preRotationOffset>
+        </north>
+        <east>
+          <size>(1.2, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0.3625, 0)</preRotationOffset>
+        </east>
+        <south>
+          <size>(1.2, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0, -0.3625)</preRotationOffset>
+        </south>
+        <west>
+          <size>(1.2, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(-0.3625, 0)</preRotationOffset>
+        </west>
+      </barDrawData>
+    </building>
+
+    <comps>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_WasteContainer">
+        <maxPerStation>1</maxPerStation>
+        <capacityFactor>1.0</capacityFactor> <!-- +100% -->
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ================================================== -->
+  <!-- =====> MECH CHARGE ACCELERATOR MODULE (1x1) <===== -->
+  <!-- ================================================== -->
+
+  <ThingDef ParentName="MSModuleBase">
+    <defName>MS_ChargeModule_Small</defName>
+    <label>charge accelerator module</label>
+    <size>(1,1)</size>
+    <uiIconScale>0.75</uiIconScale>
+    <description>Attaches to a small mech port and speeds up its charging. Up to two can be fitted to one port, each costing additional power while the port is actually charging.</description>
+
+    <researchPrerequisites>
+      <li>BasicMechtech</li>
+    </researchPrerequisites>
+
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/MechModules/MechModulesS/MechAcceleratorS/MechAcceleratorS</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.1, 1.1)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>150</basePowerConsumption>
+        <idlePowerDraw>10</idlePowerDraw>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_ChargeModule">
+        <maxPerStation>2</maxPerStation>
+        <chargeRateBonus>0.15</chargeRateBonus>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ================================================= -->
+  <!-- =====> DMS CHARGE ACCELERATOR MODULE (1x1) <===== -->
+  <!-- ================================================= -->
+
+  <ThingDef ParentName="MSModuleBase" MayRequire="Aoba.DeadManSwitch.Core">
+    <designationCategory>DMS_Category</designationCategory>
+    <defName>MS_DMSChargeModule_Small</defName>
+    <label>Charge Accelerator Module</label>
+    <size>(1,1)</size>
+    <uiIconScale>0.75</uiIconScale>
+    <description>Attaches to a small automatroid port and speeds up its charging. Up to two can be fitted to one port, each costing additional power while the port is actually charging.</description>
+
+    <researchPrerequisites>
+      <li>DMS_Automatroid</li>
+    </researchPrerequisites>
+
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/DMSModules/DMSModulesS/DMSAcceleratorS/DMSAcceleratorS</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.1, 1.1)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>150</basePowerConsumption>
+        <idlePowerDraw>10</idlePowerDraw>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_ChargeModule">
+        <maxPerStation>2</maxPerStation>
+        <chargeRateBonus>0.15</chargeRateBonus>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_LightOverride">
+        <suppressIdleMask>true</suppressIdleMask>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- =========================================== -->
+  <!-- =====> MECH AUTO-REPAIR MODULE (1x1) <===== -->
+  <!-- =========================================== -->
+
+  <ThingDef ParentName="MSModuleBase">
+    <defName>MS_RepairModule_Small</defName>
+    <label>auto-repair module</label>
+    <size>(1,1)</size>
+    <uiIconPath>Things/Building/MechModules/MechModulesS/MechRepairS/MechRepairS_icon</uiIconPath>
+    <uiIconScale>0.81</uiIconScale>
+    <description>Attaches to a small mech port and slowly repairs the docked mechanoid without a mechanitor tending to it. Up to two can be fitted to one port.</description>
+
+    <researchPrerequisites>
+      <li>BasicMechtech</li>
+    </researchPrerequisites>
+
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/MechModules/MechModulesS/MechRepairS/MechRepairS</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.1, 1.1)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>300</basePowerConsumption>
+        <idlePowerDraw>20</idlePowerDraw>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_RepairModule">
+        <maxPerStation>2</maxPerStation>
+        <repairRateFactor>0.30</repairRateFactor>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <extraGraphics>
+          <li>
+            <texPath>Things/Building/MechModules/MechModulesS/MechRepairS/MechRepairS_top</texPath>
+            <graphicClass>Graphic_Multi</graphicClass>
+            <shaderType>CutoutComplex</shaderType>
+            <drawSize>(1.5, 1.5)</drawSize>
+            <drawOffset>(0, 0.08, 0)</drawOffset>
+          </li>
+        </extraGraphics>
+
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ========================================== -->
+  <!-- =====> DMS AUTO-REPAIR MODULE (1x1) <===== -->
+  <!-- ========================================== -->
+
+  <ThingDef ParentName="MSModuleBase" MayRequire="Aoba.DeadManSwitch.Core">
+    <designationCategory>DMS_Category</designationCategory>
+    <defName>MS_DMSRepairModule_Small</defName>
+    <label>Auto-Repair Module</label>
+    <uiIconPath>Things/Building/DMSModules/DMSModulesS/DMSRepairS/DMSRepairS_icon</uiIconPath>
+    <size>(1,1)</size>
+    <uiIconScale>0.81</uiIconScale>
+    <description>Attaches to a small automatroid port and slowly repairs the docked automatroid without anyone tending to it. Up to two can be fitted to one port.</description>
+
+    <researchPrerequisites>
+      <li>DMS_Automatroid</li>
+    </researchPrerequisites>
+
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/DMSModules/DMSModulesS/DMSRepairS/DMSRepairS</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.1, 1.1)</drawSize>
+    </graphicData>
+
+    <comps>
+
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>300</basePowerConsumption>
+        <idlePowerDraw>20</idlePowerDraw>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_RepairModule">
+        <maxPerStation>2</maxPerStation>
+        <repairRateFactor>0.30</repairRateFactor>
+      </li>
+
+      <li Class="CompProperties_Flickable"/>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <extraGraphics>
+          <li>
+            <texPath>Things/Building/DMSModules/DMSModulesS/DMSRepairS/DMSRepairS_top</texPath>
+            <graphicClass>Graphic_Multi</graphicClass>
+            <shaderType>CutoutComplex</shaderType>
+            <drawSize>(1.5, 1.5)</drawSize>
+            <drawOffset>(0, 0.08, 0)</drawOffset>
+          </li>
+        </extraGraphics>
+
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- =============================================== -->
+  <!-- =====> MECH WASTE CONTAINER MODULE (1x1) <===== -->
+  <!-- =============================================== -->
+
+  <ThingDef ParentName="MSModuleBase">
+    <defName>MS_WasteModule_Small</defName>
+    <label>waste container module</label>
+    <size>(1,1)</size>
+    <uiIconScale>0.75</uiIconScale>
+    <description>Attaches to a small mech port and doubles its wastepack capacity, adding a fill indicator. Works without power. Only one can be fitted per port.</description>
+
+    <researchPrerequisites>
+      <li>BasicMechtech</li>
+    </researchPrerequisites>
+
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/MechModules/MechModulesS/MechWasteS/MechWasteS</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.1, 1.1)</drawSize>
+    </graphicData>
+
+    <building>
+      <barDrawData> <!-- Waste Bar size and position -->
+        <north>
+          <size>(0.5, 0.55)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0, 0.0255)</preRotationOffset>
+        </north>
+        <east>
+          <size>(0.55, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0.0255, 0)</preRotationOffset>
+        </east>
+        <south>
+          <size>(0.5, 0.55)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0, -0.0255)</preRotationOffset>
+        </south>
+        <west>
+          <size>(0.55, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(-0.0255, 0)</preRotationOffset>
+        </west>
+      </barDrawData>
+    </building>
+
+    <comps>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_WasteContainer">
+        <maxPerStation>1</maxPerStation>
+        <capacityFactor>1.0</capacityFactor> <!-- +100% -->
+      </li>
+
+    </comps>
+  </ThingDef>
+
+
+  <!-- ============================================== -->
+  <!-- =====> DMS WASTE CONTAINER MODULE (1x1) <===== -->
+  <!-- ============================================== -->
+
+  <ThingDef ParentName="MSModuleBase" MayRequire="Aoba.DeadManSwitch.Core">
+    <designationCategory>DMS_Category</designationCategory>
+    <defName>MS_DMSWasteModule_Small</defName>
+    <label>Waste Container Module</label>
+    <size>(1,1)</size>
+    <uiIconScale>0.75</uiIconScale>
+    <description>Attaches to a small automatroid port and doubles its wastepack capacity, adding a fill indicator. Works without power. Only one can be fitted per port.</description>
+
+    <researchPrerequisites>
+      <li>DMS_Automatroid</li>
+    </researchPrerequisites>
+
+    <statBases>
+      <MaxHitPoints>80</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+    </statBases>
+
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+
+    <graphicData>
+      <texPath>Things/Building/DMSModules/DMSModulesS/DMSWasteS/DMSWasteS</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(1.1, 1.1)</drawSize>
+
+    </graphicData>
+
+    <building>
+      <barDrawData> <!-- Waste Bar size and position -->
+        <north>
+          <size>(0.5, 0.55)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0, 0.04)</preRotationOffset>
+        </north>
+        <east>
+          <size>(0.55, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0.04, 0)</preRotationOffset>
+        </east>
+        <south>
+          <size>(0.5, 0.55)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(0, -0.04)</preRotationOffset>
+        </south>
+        <west>
+          <size>(0.55, 0.5)</size>
+          <margin>0.05</margin>
+          <preRotationOffset>(-0.04, 0)</preRotationOffset>
+        </west>
+      </barDrawData>
+    </building>
+
+    <comps>
+
+      <li Class="MechStations.MSCompProperties_ExtraRenderer">
+        <positionPresets>
+          <li>(0, 0, 0)</li>
+          <li>(0, 0, -0.25)</li>
+          <li>(0, 0, -0.5)</li>
+        </positionPresets>
+      </li>
+
+      <li Class="MechStations.MSCompProperties_WasteContainer">
+        <maxPerStation>1</maxPerStation>
+        <capacityFactor>1.0</capacityFactor> <!-- +100% -->
+      </li>
+
+    </comps>
+  </ThingDef>
+
+</Defs>

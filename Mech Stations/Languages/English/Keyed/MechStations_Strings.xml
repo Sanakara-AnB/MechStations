@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Station gizmos -->
+  <MS_GizmoAssignLabel>Assign mech</MS_GizmoAssignLabel>
+  <MS_GizmoAssignDesc>Assign a mechanoid to this station. It will return here when idle or low on energy.</MS_GizmoAssignDesc>
+  <MS_GizmoUnassignLabel>Unassign mech</MS_GizmoUnassignLabel>
+  <MS_GizmoUnassignDesc>Remove the mechanoid assignment from this station.</MS_GizmoUnassignDesc>
+  <MS_GizmoRecallLabel>Recall mech</MS_GizmoRecallLabel>
+  <MS_GizmoRecallDesc>Order the assigned mechanoid to return to this station immediately.</MS_GizmoRecallDesc>
+
+  <!-- Mech gizmo (added by Harmony patch) -->
+  <MS_GizmoReturnLabel>Return to station</MS_GizmoReturnLabel>
+  <MS_GizmoReturnDesc>Order this mechanoid to return to its assigned station immediately.</MS_GizmoReturnDesc>
+
+  <MS_GizmoFacingLabel>Set mech facing</MS_GizmoFacingLabel>
+  <MS_GizmoFacingDesc>Cycle the direction a docked mechanoid faces. Applies to any mech that docks here.</MS_GizmoFacingDesc>
+
+  <MS_GizmoBoostLabel>Charge boost</MS_GizmoBoostLabel>
+  <MS_GizmoBoostDesc>Toggle this module's contribution. While off it still draws idle power but adds no charging speed. Use the power switch to shut it down completely.</MS_GizmoBoostDesc>
+
+  <!-- Module inspect line -->
+  <MS_InspectBoostOn>Charge boost: {0}</MS_InspectBoostOn>
+  <MS_InspectBoostOff>Charge boost: disabled</MS_InspectBoostOff>
+
+  <MS_GizmoRepairLabel>Auto-repair</MS_GizmoRepairLabel>
+  <MS_GizmoRepairDesc>Toggle this module's contribution. While off it still draws idle power but repairs nothing. Use the power switch to shut it down completely.</MS_GizmoRepairDesc>
+  <MS_InspectRepairOn>Auto-repair: {0} of hand repair speed</MS_InspectRepairOn>
+  <MS_InspectRepairOff>Auto-repair: disabled</MS_InspectRepairOff>
+
+  <MS_GizmoPositionLabel>Adjust position</MS_GizmoPositionLabel>
+  <MS_GizmoPositionDesc>Cycle through the available draw positions for this building. Moves the artwork only - where the mechanoid actually stands is unchanged.</MS_GizmoPositionDesc>
+
+  <!-- Module placement -->
+  <MS_Place_NoTargetPort>Must face a mech station.</MS_Place_NoTargetPort>
+  <MS_Place_WrongPortType>This station does not accept this module type.</MS_Place_WrongPortType>
+  <MS_Place_NotAligned>Must be aligned with the station's centre.</MS_Place_NotAligned>
+
+  <!-- Inspect line -->
+  <MS_InspectNone>Assigned mech: none</MS_InspectNone>
+  <MS_InspectAssigned>Assigned mech: {MECH}</MS_InspectAssigned>
+  <MS_InspectDead>Assigned mech: {MECH} (dead)</MS_InspectDead>
+
+  <!-- Assignment float menu -->
+  <MS_MenuNoMechs>No suitable mechanoids available</MS_MenuNoMechs>
+  <MS_MenuAlreadyAssigned> (already assigned)</MS_MenuAlreadyAssigned>
+
+  <!-- Waste container extension -->
+  <MS_InspectWasteContainer>Linked port waste: {0} (capacity +{1})</MS_InspectWasteContainer>
+  <MS_InspectWasteUnlinked>Not linked to a port.</MS_InspectWasteUnlinked>
+
+  <!-- Place worker: per-def attachment limit reached -->
+  <MS_Place_TooManyModules>Cannot attach more than {0} of this module to one port.</MS_Place_TooManyModules>
+
+  <!-- Station inspect line: what is attached and what it adds -->
+  <MS_InspectModules>Modules ({0})</MS_InspectModules>
+  <MS_InspectModulesInactive>Modules ({0}): none active</MS_InspectModulesInactive>
+  <MS_InspectModuleCharge>charging +{0}</MS_InspectModuleCharge>
+  <MS_InspectModuleRepair>repair {0}</MS_InspectModuleRepair>
+  <MS_InspectModuleWaste>waste capacity +{0}</MS_InspectModuleWaste>
+
+  <!-- Mod settings -->
+  <MS_SettingSuppressChargeAnimation>Suppress charging animation on stations</MS_SettingSuppressChargeAnimation>
+  <MS_SettingStatusMask>Show charge status on the texture</MS_SettingStatusMask>
+  <MS_SettingStatusGlow>Show charge status as area light</MS_SettingStatusGlow>
+  <MS_SettingIdleMask>Light the texture while idle</MS_SettingIdleMask>
+  <MS_SettingIdleGlow>Light the area while idle</MS_SettingIdleGlow>
+  <MS_SettingMechClassOverrides>Because of its shape, the pikeman is only accepted by large ports</MS_SettingMechClassOverrides>
+  <MS_SettingMechClassOverridesDesc>The pikeman counts as a medium mech, but draws as wide as a heavy one and covers the modules of a small port. With this on it is sent to a large port instead. This affects nothing but the choice of port - weight class, bandwidth and vanilla rechargers stay exactly as they were.</MS_SettingMechClassOverridesDesc>
+  <MS_SettingClassOverridesAlsoApplyTo>Also applies to:</MS_SettingClassOverridesAlsoApplyTo>
+  <MS_ClassOverride_GD5Expansion>Glitterworld Destroyer 5 Expansion</MS_ClassOverride_GD5Expansion>
+  <MS_ClassOverride_DMWP>Diverse Mechanoid War Procedure</MS_ClassOverride_DMWP>
+
+</LanguageData>

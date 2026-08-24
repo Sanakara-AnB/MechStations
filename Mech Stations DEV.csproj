@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9CAFD238-BD61-4A0D-BE97-26478B2B8692}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mech_Stations_DEV</RootNamespace>
+    <AssemblyName>MechStations</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <!-- none, not pdbonly: pdbonly embeds the ABSOLUTE path of the symbol file
+         into the DLL, which ships the build machine's user name and folder
+         layout to everyone who downloads the mod. Verified by reading the
+         string out of a built assembly. Symbols are of no use in a released
+         mod anyway - RimWorld reports stack traces without them. -->
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>D:\Games\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>D:\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>D:\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>D:\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>D:\Games\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MSBuilding_MechCharger.cs" />
+    <Compile Include="MSBuilding_StationModule.cs" />
+    <Compile Include="MSCompChargeModule.cs" />
+    <Compile Include="MSCompExtraRenderer.cs" />
+    <Compile Include="MSCompLightOverride.cs" />
+    <Compile Include="MSCompMechDocking.cs" />
+    <Compile Include="MSCompRepairModule.cs" />
+    <Compile Include="MSCompStationModule.cs" />
+    <Compile Include="MSCompStatusLight.cs" />
+    <Compile Include="MSCompThingContainer.cs" />
+    <Compile Include="MSCompWasteContainer.cs" />
+    <Compile Include="MSDefOf.cs" />
+    <Compile Include="MSDrawUtility.cs" />
+    <Compile Include="MSGameComponent.cs" />
+    <Compile Include="MSMechClassOverrideDef.cs" />
+    <Compile Include="MSMechCompatibility.cs" />
+    <Compile Include="MSJobDriver_DockingWait.cs" />
+    <Compile Include="MSJobGiver_DockingMode.cs" />
+    <Compile Include="MSJobGiver_DockingReturn.cs" />
+    <Compile Include="MSMod.cs" />
+    <Compile Include="MSPatches.cs" />
+    <Compile Include="MSPlaceWorker_ModuleAlignment.cs" />
+    <Compile Include="MSUtility.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
